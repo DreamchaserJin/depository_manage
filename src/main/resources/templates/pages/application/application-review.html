@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>任务审批</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/lib/layui-v2.6.3/css/layui.css" media="all">
+    <link rel="stylesheet" href="/static/css/public.css" media="all">
+    <link rel="stylesheet" href="/static/js/lay-module/step-lay/step.css" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-fluid">
+            <div class="layui-card">
+                <div class="layui-card-body" style="padding-top: 40px;">
+                    <div id="stepForm" lay-filter="stepForm" style="margin: 0 auto;">
+                        <div style="margin-top: 30px">
+                            <table id="demo" class="layui-table"
+                                   style="margin: 0 auto;max-width: 800px;padding-top: 40px;">
+                                <colgroup>
+                                    <col width="150">
+                                    <col width="200">
+                                    <col>
+                                </colgroup>
+
+                                <tbody>
+                                <tr>
+                                    <td>申请编号</td>
+                                    <td id="id" th:text="${record.getId()}">123456</td>
+                                </tr>
+                                <tr>
+                                    <td>材料名称</td>
+                                    <td id="materialName" th:text="${record.getMname()}">骁龙888芯片</td>
+                                </tr>
+                                <tr>
+                                    <td>仓库名称</td>
+                                    <td id="depositoryName" th:text="${record.getDepositoryName()}">外芯仓库</td>
+                                </tr>
+                                <tr>
+                                    <td>数量</td>
+                                    <td id="quantity" th:text="${record.getQuantity()}">409</td>
+                                </tr>
+                                <tr>
+                                    <td>金额</td>
+                                    <td id="price" th:text="${record.getPrice()}">2016-11-28</td>
+                                </tr>
+                                <tr>
+                                    <td>类型</td>
+                                    <td id="type" th:text="${record.getType()}==1?'入库':'出库'">入库</td>
+                                </tr>
+
+
+                                <tr>
+                                    <td>状态</td>
+                                    <td id="state" th:text="${record.getState()}">2016-11-28</td>
+                                </tr>
+                                <tr>
+                                    <td>申请人</td>
+                                    <td id="applicantName" th:text="${record.getApplicantName()}">2016-11-28</td>
+                                </tr>
+                                <tr>
+                                    <td>请求提交时间</td>
+                                    <td id="applyTime" th:text="${record.getApplyTime()}">2016-11-28</td>
+                                </tr>
+
+                                <tr>
+                                    <td>申请备注</td>
+                                    <td id="applyRemarks" th:text="${record.getApplyRemark()}">2016-11-28</td>
+                                </tr>
+                                <tr>
+                                    <td>审核人</td>
+                                    <td id="reviewerName" th:text="${record.getReviewerName()}">2016-11-28</td>
+                                </tr>
+                                <tr id="reviewRemarksT" style="display: none">
+                                    <td>审核意见</td>
+                                    <td id="reviewRemark" th:text="${record.getReviewRemark()}">2016-11-28</td>
+                                </tr>
+                                <tr id="reviewTimeT" style="display: none">
+                                    <td>审核时间</td>
+                                    <td id="reviewTime" th:text="${record.getReviewTime()}">2016-11-28</td>
+                                </tr>
+                                <tr id="checkerNameT" style="display: none">
+                                    <td>验收人</td>
+                                    <td id="checkerName" th:text="${record.getCheckerName()}">2016-11-28</td>
+                                </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <hr>
+                    <div id="review">
+                        <div class="layui-form" style="margin: 0 auto;max-width: 900px;padding-top: 40px;">
+                            <div class=" layui-inline" >
+                                <label class="layui-form-label">选择验收人:</label>
+                                <div class="layui-inline" style="margin-bottom: 10px">
+                                    <select id="checkerIdF" name="checkerId" class="layui-input-inline" lay-verify="">
+                                        <option th:each="checker,iterStar:${checkers}" th:value="${checker.getId()}" th:text="${checker.getUname()}">张三</option>
+                                    </select>
+                                </div>
+
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">审核备注:</label>
+                                <div class="layui-input-block">
+                                    <textarea id="reviewRemarkF"  name="reviewRemark" placeholder="请填写相关原因及申请原因" value="" class="layui-textarea"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button id="reviewPass1" class="layui-btn"  onclick="review(1)">
+                                        &emsp;审核通过&emsp;
+                                    </button>
+                                    <button class="layui-btn layui-btn-danger" onclick="review(0)">
+                                        &emsp;审核不通过&emsp;
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="check" style="display: none">
+                        <div class="layui-form" style="margin: 0 auto;max-width: 900px;padding-top: 40px;">
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">验收备注:</label>
+                                <div class="layui-input-block">
+                                    <textarea id="checkRemarkF" name="checkRemark" placeholder="请填写相关原因及申请原因" value="" class="layui-textarea"></textarea>
+                                </div>
+                            </div>
+
+
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button id="checkPass1" class="layui-btn" onclick="check(1)">
+                                        &emsp;验收通过&emsp;
+                                    </button>
+                                    <button id="checkPass2" class="layui-btn layui-btn-danger" onclick="check(0)">
+                                        &emsp;验收不通过&emsp;
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+                <div class="layui-card-body" style="padding-top: 40px;">
+                    <div style="color: #666;margin-top: 30px;margin-bottom: 40px;padding-left: 30px;">
+                        <h3>说明</h3><br>
+                        申请提交后，24小时内审核完毕
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="/static/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+<script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script>
+    function check(){}
+    function review(){}
+    layui.use(['form', 'step'], function () {
+        var $ = layui.$,
+            form = layui.form,
+            step = layui.step;
+
+        var state=$("#state").text();
+        //当前处于的状态
+        var position=0,states={};
+        if (state === "待审核" || state === "审核未通过") {
+            position = 1;
+            states  = [{title: "提交申请"}, {title: state}, {title: "未入库"}];
+        } else {
+            position = 2;
+            states = [{title: "提交申请"}, {title: "审核通过"}, {title: state}];
+        }
+        step.render({
+            elem: '#stepForm',
+            filter: 'stepForm',
+            width: '100%', //设置容器宽度
+            stepWidth: '750px',
+            height: '650px',
+            position: position,
+            stepItems: states
+        });
+
+        let reviewTime=$("#reviewTime").text();
+        if (reviewTime!=null&&reviewTime!==""){
+            $("#reviewTimeT").show();
+            $("#reviewRemarksT").show();
+            $("#checkerNameT").show();
+            $("#review").hide();
+            $("#check").show();
+        }
+            // data=data.field;
+            // if (elem.id==="checkPass1"){
+            //     data.checkPass=1;
+            // }else if (elem.id==="checkPass2"){
+            //     data.checkPass=0;
+            // }else if (elem.id==="reviewPass1"){
+            //     data.reviewPass=1;
+            // }else if (elem.id==="reviewPass2"){
+            //     data.reviewPass=0;
+            // }
+            // data.checkPass=1;
+            // data.id=$("#id").text();
+            // console.log(JSON.stringify(data));
+        review=function (pass) {
+            let data={};
+            data.id=$("#id").text();
+            if (pass){
+                data.reviewPass=1;
+                data.checkerId=$("#checkerIdF").val();
+            }else {
+                data.reviewPass=0;
+            }
+            data.reviewRemark=$("#reviewRemarkF").val();
+            send(data);
+        }
+        check=function(pass) {
+            let data={};
+            data.id=$("#id").text();
+            if (pass){
+                data.checkPass=1;
+            }else {
+                data.checkPass=0;
+            }
+            data.checkRemark=$("#checkRemarkF").val();
+            send(data);
+        }
+        function send(req) {
+            console.log(JSON.stringify(req));
+            $.ajax({
+                url:"/review",
+                type:'put',
+                dataType:'json',
+                contentType: "application/json;charset=utf-8",
+                data:JSON.stringify(req),
+                beforeSend:function () {
+                    this.layerIndex = layer.load(0, { shade: [0.5, '#393D49'] });
+                },
+                success:function(data){
+                    layer.close(this.layerIndex);
+                    if(data.status >= 300){
+                        layer.msg(data.statusInfo.message);//失败的表情
+                        return;
+                    }else{
+                        layer.msg("提交成功", {
+                            icon: 6,//成功的表情
+                            time: 500 //1秒关闭（如果不配置，默认是3秒）
+                        }, function(){
+                            window.location = '/form_step_look?id='+req.id;
+                        });
+                    }
+                },
+            })
+        }
+
+    })
+</script>
+</body>
+</html>

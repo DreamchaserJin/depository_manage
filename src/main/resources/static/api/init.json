@@ -1,0 +1,183 @@
+{
+  "homeInfo": {
+    "title": "首页",
+    "href": "/welcome"
+  },
+  "logoInfo": {
+    "title": "Repository",
+    "image": "static/images/logo.png",
+    "href": ""
+  },
+  "menuInfo": [
+    {
+      "title": "仓库信息概览",
+      "href": "/welcome",
+      "icon": "fa fa-tachometer",
+      "target": "_self",
+      "child": [
+        {
+          "title": "首页",
+          "href": "/welcome",
+          "icon": "fa fa-home",
+          "target": "_self"
+        }
+      ]
+    },
+    {
+      "title": "仓库管理",
+      "icon": "fa fa-lemon-o",
+      "href": "",
+      "target": "_self",
+      "child": [
+        {
+          "title": "申请提交",
+          "icon": "fa fa-book",
+          "target": "_self",
+          "child": [
+            {
+              "title": "入库申请",
+              "href": "/application_in",
+              "icon": "layui-icon layui-icon-file-b",
+              "target": "_self"
+            },
+            {
+              "title": "出库申请",
+              "href": "/application_out",
+              "icon": "fa fa-file-text",
+              "target": "_self"
+            },
+            {
+              "title": "库存转移申请",
+              "href": "application_transfer",
+              "icon": "fa fa-exchange",
+              "target": "_self"
+            }
+          ]
+        },
+        {
+          "title": "入库管理",
+          "icon": "fa fa-mail-forward",
+          "target": "_self",
+          "child": [
+            {
+              "title": "入库查询",
+              "href": "/table_in",
+              "icon": "fa fa-th-list",
+              "target": "_self"
+            },
+            {
+              "title": "入库可视化",
+              "href": "/chart_in",
+              "icon": "fa fa-bar-chart",
+              "target": "_self"
+            }
+          ]
+        },
+        {
+          "title": "出库管理",
+          "icon": "fa fa-mail-reply",
+          "target": "_self",
+          "child": [
+            {
+              "title": "出库查询",
+              "href": "/table_out",
+              "icon": "fa fa-th-list",
+              "target": "_self"
+            },
+            {
+              "title": "出库可视化",
+              "href": "/chart_out",
+              "icon": "fa fa-pie-chart",
+              "target": "_self"
+            }
+          ]
+        },
+        {
+          "title": "库存管理",
+          "icon": "fa fa-server",
+          "target": "_self",
+          "child": [
+            {
+              "title": "库存查询",
+              "href": "/table_stock",
+              "icon": "fa fa-th-list",
+              "target": "_self"
+            },
+            {
+              "title": "库存可视化",
+              "href": "/chart_stock",
+              "icon": "fa fa-area-chart",
+              "target": "_self"
+            }
+          ]
+        },
+        {
+          "title": "其他管理",
+          "icon": "fa fa-wrench",
+          "target": "_self",
+          "child": [
+            {
+              "title": "材料种类添加",
+              "href": "/materialType_add",
+              "icon": "layui-icon layui-icon-list",
+              "target": "_self"
+            },
+            {
+              "title": "创建仓库",
+              "href": "/depository_add",
+              "icon": "layui-icon layui-icon-template-1",
+              "target": "_self"
+            }
+          ]
+        },
+        {
+          "title": "我的任务",
+          "icon": "fa fa-tasks",
+          "target": "_self",
+          "href": "/my_task"
+        },
+
+        {
+          "title": "我的申请",
+          "href": "/my_apply",
+          "icon": "fa fa-paper-plane",
+          "target": "_self"
+        }
+      ]
+    },
+    {
+      "title": "辅助管理",
+      "icon": "fa fa-slideshare",
+      "href": "",
+      "target": "_self",
+      "child": [
+        {
+          "title": "人员管理",
+          "href": "/table_user",
+          "icon": "fa fa-group",
+          "target": ""
+        },
+        {
+          "title": "公告发布",
+          "href": "/notice_edit",
+          "icon": "fa fa-superpowers",
+          "target": "_self"
+        }
+      ]
+    },
+    {
+      "title": "个人中心",
+      "href": "pages/error.html",
+      "icon": "fa fa-superpowers",
+      "target": "_self",
+      "child": [
+        {
+          "title": "个人信息",
+          "href": "/account_look",
+          "icon": "layui-icon layui-icon-friends",
+          "target": ""
+        }
+      ]
+    }
+  ]
+}

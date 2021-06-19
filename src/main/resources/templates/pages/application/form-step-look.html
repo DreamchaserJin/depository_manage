@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>分步表单</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/lib/layui-v2.6.3/css/layui.css" media="all">
+    <link rel="stylesheet" href="/static/css/public.css" media="all">
+    <link rel="stylesheet" href="/static/js/lay-module/step-lay/step.css" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-fluid">
+            <div class="layui-card">
+                <div class="layui-card-body" style="padding-top: 40px;">
+                    <div id="stepForm" lay-filter="stepForm" style="margin: 0 auto;">
+                        <div style="margin-top: 30px">
+                            <table id="demo" class="layui-table"
+                                   style="margin: 0 auto;max-width: 800px;padding-top: 40px;">
+                                <colgroup>
+                                    <col width="150">
+                                    <col width="200">
+                                </colgroup>
+
+                                <tbody>
+                                <tr>
+                                    <td>申请编号</td>
+                                    <td id="applicationId" th:text="${record.getId()}">123456</td>
+                                </tr>
+                                <tr>
+                                    <td>材料名称</td>
+                                    <td id="materialName" th:text="${record.getMname()}">骁龙888芯片</td>
+                                </tr>
+                                <tr>
+                                    <td>仓库名称</td>
+                                    <td id="depositoryName" th:text="${record.getDepositoryName()}">外芯仓库</td>
+                                </tr>
+                                <tr>
+                                    <td>数量</td>
+                                    <td id="quantity" th:text="${record.getQuantity()}">409</td>
+                                </tr>
+                                <tr>
+                                    <td>金额</td>
+                                    <td id="price" th:text="${record.getPrice()}">2016-11-28</td>
+                                </tr>
+                                <tr>
+                                    <td>类型</td>
+                                    <td id="type" th:text="${record.getType()}==1?'入库':'出库'">入库</td>
+                                </tr>
+
+
+                                <tr>
+                                    <td>状态</td>
+                                    <td id="state" th:text="${record.getState()}">2016-11-28</td>
+                                </tr>
+                                <tr>
+                                    <td>申请人</td>
+                                    <td id="applicantName" th:text="${record.getApplicantName()}">2016-11-28</td>
+                                </tr>
+                                <tr>
+                                    <td>请求提交时间</td>
+                                    <td id="applyTime" th:text="${record.getApplyTime()}">2016-11-28</td>
+                                </tr>
+
+                                <tr>
+                                    <td>申请备注</td>
+                                    <td id="applyRemarks" th:text="${record.getApplyRemark()}">2016-11-28</td>
+                                </tr>
+                                <tr>
+                                    <td>审核人</td>
+                                    <td id="reviewerName" th:text="${record.getReviewerName()}">2016-11-28</td>
+                                </tr>
+                                <tr id="reviewRemarksT" style="display: none">
+                                    <td>审核意见</td>
+                                    <td id="reviewRemarks" th:text="${record.getReviewRemark()}">2016-11-28</td>
+                                </tr>
+                                <tr id="reviewTimeT" style="display: none">
+                                    <td>审核时间</td>
+                                    <td id="reviewTime" th:text="${record.getReviewTime()}">2016-11-28</td>
+                                </tr>
+                                <tr id="checkerNameT" style="display: none">
+                                    <td>验收人</td>
+                                    <td id="checkerName" th:text="${record.getCheckerName()}">2016-11-28</td>
+                                </tr>
+                                <tr id="checkRemarkT" style="display: none">
+                                    <td>验收备注</td>
+                                    <td id="checkRemark" th:text="${record.getCheckRemark()}">2016-11-28</td>
+                                </tr>
+                                <tr id="checkTimeT" style="display: none">
+                                    <td>验收时间</td>
+                                    <td id="checkTime" th:text="${record.getCheckTime()}">2016-11-28</td>
+                                </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="layui-card-body" style="padding-top: 40px;">
+                    <div style="color: #666;margin-top: 30px;margin-bottom: 40px;padding-left: 30px;">
+                        <h3>说明</h3><br>
+                        申请提交后，24小时内审核完毕
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="/static/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+<script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'step'], function () {
+        var $ = layui.$,
+            form = layui.form,
+            step = layui.step;
+
+
+
+        var state=$("#state").text();
+        //当前处于的状态
+        var position=0,states={};
+        if (state === "待审核" || state === "审核未通过") {
+            position = 1;
+            states  = [{title: "提交申请"}, {title: state}, {title: "未入库"}];
+        } else {
+            position = 2;
+            states = [{title: "提交申请"}, {title: "审核通过"}, {title: state}];
+        }
+        step.render({
+            elem: '#stepForm',
+            filter: 'stepForm',
+            width: '100%', //设置容器宽度
+            stepWidth: '750px',
+            height: '650px',
+            position: position,
+            stepItems: states
+        });
+
+        // var data = window.parent.data;
+
+        // $("#id").text(data.id);
+        // $("#materialName").text(data.materialName);
+        // $("#depositoryName").text(data.depositoryName);
+        // $("#quantity").text(data.quantity);
+        // $("#price").text(data.price);
+        // data.type===0?$("#type").text('出库'):$("#type").text('入库');
+        // $("#state").text(data.state);
+        // $("#applicantName").text(data.applicantName);
+        // $("#reviewerName").text(data.reviewerName);
+        // $("#applyTime").text(data.applyTime);
+        // $("#applyRemark").text(data.applyRemark);
+        let reviewTime=$("#reviewTime").text();
+        let checkTime=$("#checkTime").text();
+        if (reviewTime!=null&&reviewTime!==""){
+            $("#reviewTimeT").show();
+            $("#reviewRemarkT").show();
+            if (state!=="审核未通过"){
+                $("#checkerNameT").show();
+            }
+            // $("#reviewTime").text(data.reviewTime);
+            // $("#reviewRemark").text(data.reviewRemark);
+            // $("#checkerName").text(data.checkerName);
+        }
+        if (checkTime!=null&&checkTime!==""){
+            $("#checkTimeT").show();
+            $("#checkRemarkT").show();
+            // $("#checkTime").text(data.checkTime);
+            // $("#checkRemark").text(data.checkRemark);
+        }
+
+
+    })
+</script>
+</body>
+</html>

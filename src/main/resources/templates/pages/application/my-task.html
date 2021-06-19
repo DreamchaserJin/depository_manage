@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/lib/layui-v2.6.3/css/layui.css" media="all">
+    <link rel="stylesheet" href="/static/css/public.css" media="all">
+
+</head>
+
+<div class="layui-bg-gray" style="padding: 10px;">
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>未完成任务</legend>
+    </fieldset>
+    <table class="layui-table">
+        <colgroup>
+            <col width="25%">
+            <col width="25%">
+            <col width="25%">
+            <col width="25%">
+        </colgroup>
+        <tbody id="LAY_floor1">
+        </tbody>
+    </table>
+</div>
+<div class="layui-bg-gray" style="padding: 10px;">
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>已完成任务</legend>
+    </fieldset>
+
+
+    <table class="layui-table">
+        <colgroup>
+            <col width="25%">
+            <col width="25%">
+            <col width="25%">
+            <col width="25%">
+        </colgroup>
+        <tbody id="LAY_floor2">
+        </tbody>
+    </table>
+</div>
+
+
+</body>
+<script src="/static/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+<script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script>
+    var data= {};
+
+    //先声明
+    function openDetail1(data) {
+    };
+
+    //先声明
+    function openDetail2(data) {
+    };
+    layui.use(['flow', 'layer', 'flow', 'util'], function () {
+        var $ = layui.jquery,
+            layer = layui.layer,
+            flow = layui.flow,
+            util = layui.util;
+        //每页的数量
+        var size=8;
+        let pre1=0,pre2=0;
+        flow.load({
+            elem: '#LAY_floor1' //流加载容器
+            ,scrollElem: '#LAY_floor1' //滚动条所在元素，一般不用填，此处只是演示需要。
+            ,isAuto:false
+            ,done: function(page, next){ //执行下一页的回调
+                let lis = [];
+                let result;
+                $.get('/myTask?page='+page+'&size='+size+'&isDone=0', function(res){
+                    result=res.data;
+                    for (let i=0;i<result.length;i++){
+                        if (i%4===0){
+                            lis.push('<tr>');
+                        }
+                        lis.push('<td><div class="layui-card  my-shadow my-card flow1" onclick="openDetail1('
+                            +result[i].id+')"><div class="layui-card-header"><h2>'
+                            +result[i].applicantName+'的')
+                        if (result[i].type===1){
+                            lis.push('入库请求</h2></div>');
+                        }else {
+                            lis.push('出库请求</h2></div>');
+                        }
+                        lis.push('<div class="layui-card-body">'+result[i].applyRemark
+                            +'</div><div class="layui-col-md4 my-time" style="margin-left: 15px; color: #999;font-size: 12px;">'
+                            +result[i].applyTime+'</div></div></td>');
+                        if (i%4===3){
+                            lis.push('</tr>');
+                        }
+                    }
+                    if (result.length%4!==0){
+                        lis.push('</tr>');
+                    }
+                    pre1+=result.length;
+                    //执行下一页渲染，第二参数为：满足“加载更多”的条件，即后面仍有分页
+                    //pages为Ajax返回的总页数，只有当前页小于总页数的情况下，才会继续出现加载更多
+                    next(lis.join(''), pre1 < res.count);
+                });
+            }
+        });
+        flow.load({
+            elem: '#LAY_floor2' //流加载容器
+            ,scrollElem: '#LAY_floor2' //滚动条所在元素，一般不用填，此处只是演示需要。
+            ,isAuto:false
+            ,done: function(page, next){ //执行下一页的回调
+                let lis = [];
+                let result;
+                $.get('/myTask?page='+page+'&size='+size+'&isDone=1', function(res){
+                    result=res.data;
+                    for (let i=0;i<result.length;i++){
+                        if (i%4===0){
+                            lis.push('<tr>');
+                        }
+                        lis.push('<td><div class="layui-card  my-shadow my-card flow1" onclick="openDetail2('
+                            +result[i].id+')"><div class="layui-card-header"><h2>'
+                            +result[i].applicantName+'的')
+                        if (result[i].type===1){
+                            lis.push('入库请求</h2></div>');
+                        }else {
+                            lis.push('出库请求</h2></div>');
+                        }
+                        lis.push('<div class="layui-card-body">'+result[i].applyRemark
+                            +'</div><div class="layui-col-md4 my-time" style="margin-left: 15px; color: #999;font-size: 12px;">'
+                            +result[i].applyTime+'</div></div></td>');
+                        if (i%4===3){
+                            lis.push('</tr>');
+                        }
+                    }
+                    if (result.length%4!==0){
+                        lis.push('</tr>');
+                    }
+                    pre2+=result.length;
+                    //执行下一页渲染，第二参数为：满足“加载更多”的条件，即后面仍有分页
+                    //pages为Ajax返回的总页数，只有当前页小于总页数的情况下，才会继续出现加载更多
+                    next(lis.join(''), pre2 < res.count);
+                });
+            }
+        });
+
+        openDetail1 = function (item) {
+
+            var index = layer.open({
+                title: '请求详情',
+                type: 2,
+                shade: 0.2,
+                maxmin: true,
+                shadeClose: true,
+                area: ['100%', '100%'],
+                content: '/application_review?id='+item,
+            });
+            $(window).on("resize", function () {
+                layer.full(index);
+            });
+        }
+        openDetail2 = function (item) {
+            var index = layer.open({
+                title: '请求详情',
+                type: 2,
+                shade: 0.2,
+                maxmin: true,
+                shadeClose: true,
+                area: ['100%', '100%'],
+                content: '/form_step_look?id='+item,
+            });
+            $(window).on("resize", function () {
+                layer.full(index);
+            });
+        }
+
+    });
+</script>
+</html>

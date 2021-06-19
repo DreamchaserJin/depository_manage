@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/lib/layui-v2.6.3/css/layui.css" media="all">
+    <link rel="stylesheet" href="/static/css/public.css" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="table-search-fieldset">
+            <legend>材料种类增加</legend>
+            <div class="layui-fluid">
+                <div class="layui-card">
+                    <div class="layui-card-body" style="padding-top: 40px;">
+                        <div>
+                            <form class="layui-form" lay-filter="form1" style="margin: 0 auto;max-width: 460px;padding-top: 100px; padding-bottom: 200px">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">种类名称:</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" placeholder="请填写材料种类名称" class="layui-input" name="tname"
+                                               lay-verify="required"/>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">种类介绍:</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" placeholder="请填写入材料种类介绍" name="introduce" class="layui-input"
+                                               lay-verify="required" required>
+                                    </div>
+                                </div>
+
+                                <div class="layui-form-item">
+                                    <div class="layui-input-block">
+                                        <button class="layui-btn" lay-submit lay-filter="formStep">
+                                            &emsp;增加种类&emsp;
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+            </div>
+        </fieldset>
+
+    </div>
+</div>
+    <script src="/static/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+    <script>
+        var data;
+        layui.use(['form', 'layer'], function () {
+            var $ = layui.jquery,
+                form = layui.form,
+                layer = layui.layer;
+
+            form.on('submit(formStep)', function (data) {
+                $.ajax({
+                    url:"/materialType",
+                    type:'post',
+                    dataType:'json',
+                    contentType: "application/json;charset=utf-8",
+                    data:JSON.stringify(data.field),
+                    beforeSend:function () {
+                        this.layerIndex = layer.load(0, { shade: [0.5, '#393D49'] });
+                    },
+                    success:function(data){
+                        layer.close(this.layerIndex);
+                        if(data.status >= 300){
+                            layer.msg(data.statusInfo.message);//失败的表情
+                            return;
+                        }else{
+                            layer.msg("添加成功！", {
+                                icon: 6,//成功的表情
+                                time: 1000 //1秒关闭（如果不配置，默认是3秒）
+                            });
+                        }
+                    },
+                    complete: function () {
+                        form.val("form1", {
+                            "tname": "" // "name": "value"
+                            ,"introduce": ""
+                        })
+                    }
+                })
+                return false;
+            });
+
+        });
+    </script>
+
+</body>
+</html>

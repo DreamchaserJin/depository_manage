@@ -1,0 +1,95 @@
+{
+  "code": 0,
+  "msg": "",
+  "count": 1000,
+  "data": [
+    {
+      "id": 10000,
+      "uname": "张三",
+      "sex": "男",
+      "authority": "仓管员",
+      "phone": "4561348",
+      "email": "12345689@qq.com",
+      "depositoryName": "外芯仓库",
+      "entryDate": "2012-10-06",
+      "depositoryId": 1
+    },
+    {
+      "id": 10000,
+      "uname": "李四",
+      "sex": "男",
+      "authority": "仓管员",
+      "phone": "4561348",
+      "email": "12345689@qq.com",
+      "depositoryName": "义乌仓库a",
+      "entryDate": "2012-10-06",
+      "depositoryId": 1
+    },
+    {
+      "id": 10000,
+      "uname": "King",
+      "sex": "男",
+      "authority": "仓管员",
+      "phone": "4561348",
+      "email": "12345689@qq.com",
+      "depositoryName": "义乌仓库b",
+      "entryDate": "2012-10-06",
+      "depositoryId": 1
+    },
+    {
+      "id": 10000,
+      "uname": "张三",
+      "sex": "男",
+      "authority": "仓管员",
+      "phone": "4561348",
+      "email": "12345689@qq.com",
+      "depositoryName": "宁波仓库",
+      "entryDate": "2012-10-06",
+      "depositoryId": 1
+    },
+    {
+      "id": 10000,
+      "uname": "张三",
+      "sex": "男",
+      "authority": "仓管员",
+      "phone": "4561348",
+      "email": "12345689@qq.com",
+      "depositoryName": "宁波仓库",
+      "entryDate": "2012-10-06",
+      "depositoryId": 1
+    },
+    {
+      "id": 10000,
+      "uname": "boss",
+      "sex": "男",
+      "authority": "系统管理员",
+      "phone": "4561348",
+      "email": "12345689@qq.com",
+      "depositoryName": "all",
+      "entryDate": "2012-10-06",
+      "depositoryId": 1
+    },
+    {
+      "id": 10000,
+      "uname": "张三",
+      "sex": "男",
+      "authority": "仓管员",
+      "phone": "4561348",
+      "email": "12345689@qq.com",
+      "depositoryName": "外芯仓库",
+      "entryDate": "2012-10-06",
+      "depositoryId": 1
+    },
+    {
+      "id": 10000,
+      "uname": "张三",
+      "sex": "男",
+      "authority": "仓管员",
+      "phone": "4561348",
+      "email": "12345689@qq.com",
+      "depositoryName": "外芯仓库",
+      "entryDate": "2012-10-06",
+      "depositoryId": 1
+    }
+  ]
+}

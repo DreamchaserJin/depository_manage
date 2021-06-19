@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/lib/layui-v2.6.3/css/layui.css" media="all">
+    <link rel="stylesheet" href="/static/css/public.css" media="all">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form layuimini-form" lay-filter="example">
+    <div id="id" style="display:none;" th:value="${user.getId()}"></div>
+    <div class="layui-form-item">
+        <label class="layui-form-label required">用户名</label>
+        <div class="layui-input-block">
+            <input type="text" name="uname" th:value="${user.getUname()}" lay-verify="required" lay-reqtext="用户名不能为空" placeholder="请输入用户名" value="" class="layui-input">
+            <tip>填写自己管理账号的名称。</tip>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label required">性别</label>
+        <div class="layui-input-block">
+            <input type="radio" name="sex" value="男" title="男" th:checked="${user.getSex()}=='男'">
+            <input type="radio" name="sex" value="女" title="女"  th:checked="${user.getSex()}=='女'">
+        </div>
+    </div>
+    <div class=" layui-form-item" >
+        <label class="layui-form-label required">权限:</label>
+        <div class="layui-inline " style="margin-bottom: 10px">
+            <select name="authority" class="layui-input-inline" lay-verify="required">
+                <option value="系统管理员" th:selected="${user.getAuthority()}=='系统管理员'">系统管理员</option>
+                <option value="审核人" th:selected="${user.getAuthority()}=='审核人'">审核人</option>
+                <option value="仓管员" th:selected="${user.getAuthority()}=='仓管员'">仓管员</option>
+                <option value="员工" th:selected="${user.getAuthority()}=='员工'">员工</option>
+                <option value="游客" th:selected="${user.getAuthority()}=='游客'">游客</option>
+            </select>
+        </div>
+    </div>
+    <div class=" layui-form-item" >
+        <label class="layui-form-label required">负责仓库:</label>
+        <div class="layui-inline" style="margin-bottom: 10px">
+            <select name="depositoryId" th:value="${user.getDepositoryId()}" lay-verify="required">
+                <option value="">请选择仓库</option>
+                <option value="-1">全部仓库</option>
+                <option th:each="depository,iterStar:${depositories}" th:value="${depository?.getId()}" th:text="${depository?.getDname()}" selected>外芯仓库</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label required">手机</label>
+        <div class="layui-input-block">
+            <input type="number" name="phone" th:value="${user.getPhone()}" lay-verify="phone"  placeholder="请输入手机号" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label required">邮箱</label>
+        <div class="layui-input-block">
+            <input type="email" name="email" th:value="${user.getEmail()}" lay-verify="email" placeholder="请输入邮箱" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label ">密码</label>
+        <div class="layui-input-block">
+            <input type="text" name="pwd" placeholder="请输入密码" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label required">入职时间</label>
+        <div class="layui-input-block">
+            <input id="entryDate" type="text" name="entryDate" th:value="${user.getEntryDate()}"  lay-verify="date" placeholder="请选择入职时间" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+        </div>
+    </div>
+</form>
+<script src="/static/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+<script>
+    layui.use(['form','layer','laydate'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            laydate=layui.laydate,
+            $ = layui.$;
+
+        //日期
+        laydate.render({
+            elem: '#date'
+        });
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            data=data.field;
+            $.ajax({
+                url: "/sys/user",
+                type: 'put',
+                dataType: 'json',
+                contentType: "application/json;charset=utf-8",
+                data: JSON.stringify(data),
+                beforeSend: function () {
+                    this.layerIndex = layer.load(0, {shade: [0.5, '#393D49']});
+                },
+                success: function (data) {
+                    layer.close(this.layerIndex);
+                    if (data.status >= 300) {
+                        layer.msg(data.statusInfo.message);//失败的表情
+                        return;
+                    } else {
+                        layer.msg("用户信息成功", {
+                            icon: 6,//成功的表情
+                            time: 500 //1秒关闭（如果不配置，默认是3秒）
+                        },function(){
+                            window.location='/table_user'
+                        })
+                    }
+                }
+            })
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

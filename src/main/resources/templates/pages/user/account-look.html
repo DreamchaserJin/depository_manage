@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/lib/layui-v2.6.3/css/layui.css" media="all">
+    <link rel="stylesheet" href="/static/css/public.css" media="all">
+
+</head>
+<style>
+
+</style>
+<body>
+<div class="layui-container">
+    <div class="layui-main layui-card" style="width: 100%;border-radius: 10px;height: 50%">
+        <div class="layui-card-header"><h3>基本信息</h3></div>
+        <div class="layui-card-body">
+            <div id="user-info" class="layui-field-box">
+                <div id="edit-btn" style="position: absolute;right: 16px;cursor: pointer"><a ><h3> 编辑 </h3></a></div>
+
+                <table class="layui-table" lay-skin="nob">
+                    <colgroup>
+                        <col width="100">
+                        <col width="500">
+                    </colgroup>
+
+                    <tbody>
+                    <tr>
+                        <td>姓名</td>
+                        <td th:text="${user.getUname()}">张三</td>
+                    </tr>
+                    <tr>
+                        <td>性别</td>
+                        <td th:text="${user.getSex()}">男</td>
+                    </tr>
+                    <tr>
+                        <td>手机</td>
+                        <td th:text="${user.getPhone()}">12345678911</td>
+                    </tr>
+
+                    <tr>
+                        <td>入职时间</td>
+                        <td th:text="${user.getEntryDate()}">2020-12-02</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="edit-div" class="layui-field-box" style="display: none">
+                <div style="position: absolute;right: 16px;"><a style="cursor: pointer;display: none">编辑</a></div>
+
+                <div class="layui-form layuimini-form" style="margin: 20px;margin-top: 30px">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label required">用户名</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="uname" th:value="${user.getUname()}" lay-verify="required" lay-reqtext="用户名不能为空"
+                                   placeholder="请输入用户名" value="" class="layui-input">
+                            <tip>填写自己真实姓名</tip>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label required">性别</label>
+                        <div class="layui-input-block">
+                            <input type="radio" name="sex" value="男" title="男" th:checked="${user.getSex()}=='男'">
+                            <input type="radio" name="sex" value="女" title="女"  th:checked="${user.getSex()}=='女'">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label required">手机</label>
+                        <div class="layui-input-block">
+                            <input type="number" name="phone" th:value="${user.getPhone()}" lay-verify="phone" placeholder="请输入手机号" value=""
+                                   class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label required">入职时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="entryDate" th:value="${user.getEntryDate()}" id="date" lay-verify="date" placeholder="请选择入职时间"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item" style="margin-top: 20px">
+                        <div class="layui-input-block">
+                            <button id="cancel-btn" class="layui-btn layui-btn-radius layui-btn-sm layui-btn-normal">
+                                取消
+                            </button>
+                            <button class="layui-btn layui-btn-radius layui-btn-sm layui-btn-warm" lay-submit
+                                    lay-filter="saveBtn">保存
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="layui-main layui-card" style="width: 100%;border-radius: 10px;height: 50%">
+        <div class="layui-card-header"><h3>账户信息</h3></div>
+        <div class="layui-card-body">
+            <div class="layui-field-box">
+                <table class="layui-table" lay-skin="nob">
+                    <colgroup>
+                        <col width="100">
+                        <col width="500">
+                        <col width="100">
+                    </colgroup>
+
+                    <tr>
+                        <td>绑定邮箱</td>
+                        <td th:text="${user.getEmail()}">123456789@qq.com</td>
+                        <td><button class="layui-btn-sm layui-btn-primary layui-border-blue" style="cursor: pointer" id="email-edit" >修改</button></td>
+                    </tr>
+                    <tr>
+                        <td>密码</td>
+                        <td>**********</td>
+                        <td><button class="layui-btn-sm layui-btn-primary layui-border-blue" style="cursor: pointer" id="password-edit" >修改</button></td>
+                    </tr>
+                    <tr>
+                        <td>身份</td>
+                        <td th:text="${user.getAuthority()}">系统管理员</td>
+                    </tr>
+                    <tr>
+                        <td>负责仓库</td>
+                        <td th:text="${user.getDepositoryName()}">all</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'layer', 'laydate'], function () {
+        var form = layui.form,
+            laydate = layui.laydate,
+            $ = layui.$;
+
+        //日期
+        laydate.render({
+            elem: '#date'
+        });
+        $('#user-info').mouseover(function () {
+            $('#edit-btn').show();
+        })
+        $('#user-info').mouseout(function () {
+            $('#edit-btn').hide();
+        })
+
+        $('#edit-btn').click(function () {
+            $('#user-info').hide();
+            $('#edit-div').show();
+        })
+
+        $('#cancel-btn').click(function () {
+            $('#user-info').show();
+            $('#edit-div').hide();
+        })
+
+        $('#email-edit').click(function () {
+            var index=layer.open({
+                title: '邮箱修改',
+                type: 2,
+                shade: 0.2,
+                maxmin:true,
+                shadeClose: true,
+                area: ['100%', '100%'],
+                content: '/user_email',
+            });
+            $(window).on("resize", function () {
+                layer.full(index);
+            });
+        })
+        $('#password-edit').click(function () {
+            var index=layer.open({
+                title: '密码修改',
+                type: 2,
+                shade: 0.2,
+                maxmin:true,
+                shadeClose: true,
+                area: ['100%', '100%'],
+                content: '/user_password',
+            });
+            $(window).on("resize", function () {
+                layer.full(index);
+            });
+        })
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            data=data.field;
+            $.ajax({
+                url: "/user",
+                data: JSON.stringify(data),
+                type: "put",
+                dataType: 'json',
+                contentType: "application/json;charset=utf-8",
+                success: function (data) {
+                    if (data.status >= 300) {
+                        layer.msg(data.statusInfo.message);//失败的表情
+                        return;
+                    } else {
+                        layer.msg("个人信息修改成功", {
+                            icon: 6,//成功的表情
+                            time: 1000 //1秒关闭（如果不配置，默认是3秒）
+                        }, function () {
+                            window.location = '/account_look';
+                        });
+                    }
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

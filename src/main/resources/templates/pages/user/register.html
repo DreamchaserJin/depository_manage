@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet"  href="static/css/public.css">
+    <link rel="stylesheet"  href="static/lib/layui-v2.6.3/css/layui.css">
+    <style>
+        body {
+            background: url("../../../static/images/loginbg.png") 0% 0% / cover no-repeat;
+            position: static;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-container">
+    <div class="layui-main layui-card" style="width: 500px;border-radius: 10px">
+        <fieldset class="layui-elem-field" style="margin-top: 20%">
+            <legend style="font-size: 30px;padding-top: 20px;text-align: center">用户注册</legend>
+            <div class="layui-field-box">
+                <div class="layui-form layuimini-form" style="margin: 20px;margin-top: 30px">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label required">用户名</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="uname" lay-verify="required" lay-reqtext="用户名不能为空"
+                                   placeholder="请输入用户名" value="" class="layui-input">
+                            <tip>填写自己真实姓名</tip>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label required">性别</label>
+                        <div class="layui-input-block">
+                            <input type="radio" name="sex" value="男" title="男" checked="">
+                            <input type="radio" name="sex" value="女" title="女">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label required">手机</label>
+                        <div class="layui-input-block">
+                            <input type="number" name="phone" lay-verify="phone" placeholder="请输入手机号" value=""
+                                   class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label required">邮箱</label>
+                        <div class="layui-input-block">
+                            <input id="email" type="email" name="email" lay-verify="email" placeholder="请输入邮箱" value=""
+                                   class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label required">密码</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="pwd" lay-verify="required" placeholder="请输入密码" value=""
+                                   class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label required">入职时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="entryDate" id="date" lay-verify="date" placeholder="请选择入职时间"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label required" style="display: inline">邮箱验证码</label>
+                        <input type="text" class="layui-input" name="code" placeholder="请输入验证码" lay-verify="required"
+                               maxlength="5" style="width:160px;display: inline">
+                        <button id="saveBtn" lay-filter="saveBtn" class="layui-btn layui-btn-normal layui-btn-sm"
+                                style="display: inline;margin-left: 10px">发送验证码
+                        </button>
+                    </div>
+
+
+                    <div class="layui-form-item" style="margin-top: 20px">
+                        <div class="layui-input-block">
+                            <button class="layui-btn layui-btn-lg" style="width: 150px" lay-submit
+                                    lay-filter="registerBtn">注册
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+
+
+    </div>
+</div>
+
+<script src="static/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'layer', 'laydate','element'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            laydate = layui.laydate,
+            element=layui.element,
+            $ = layui.$;
+
+        //日期
+        laydate.render({
+            elem: '#date'
+        });
+
+        //监听提交
+        $('#saveBtn').bind('click', function () {
+            var email = $('#email').val();
+            if (email===''||email==null){
+                layer.msg("请输入正确的邮箱!");
+            }else {
+                $.ajax({
+                    url: "/sendCode",
+                    data:'{"email":'+JSON.stringify(email)+'}',
+                    type: "post",
+                    dataType: 'JSON',
+                    contentType: "application/json;charset=utf-8",
+                    success: function (data) {
+                        if (data.status !== 200) {
+                            layer.msg(data.statusInfo.message);//失败的表情
+                            return;
+                        } else {
+                            layer.msg("验证码发送成功，请前往邮箱查看", {
+                                icon: 6,//成功的表情
+                                time: 1000 //1秒关闭（如果不配置，默认是3秒）
+                            }, function () {
+
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        //监听提交
+        form.on('submit(registerBtn)', function (data) {
+            $.ajax({
+                url: "/register",
+                data: JSON.stringify(data.field),
+                type: "post",
+                dataType: 'JSON',
+                contentType: "application/json;charset=utf-8",
+                success: function (data) {
+                    if (data.status !== 200) {
+                        layer.msg(data.statusInfo.message);//失败的表情
+                        return;
+                    } else {
+                        layer.msg("注册成功", {
+                            icon: 6,//成功的表情
+                            time: 1000 //1秒关闭（如果不配置，默认是3秒）
+                        }, function () {
+                            window.location = '/login';
+                        });
+                    }
+                }
+            });
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

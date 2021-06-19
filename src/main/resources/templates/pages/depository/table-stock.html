@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/lib/layui-v2.6.3/css/layui.css" media="all">
+    <link rel="stylesheet" href="/static/css/public.css" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">仓库</label>
+                            <div class="layui-input-inline">
+                                <select name="depositoryId" >
+                                    <option value="" selected>请选择仓库</option>
+                                    <option th:each="depository,iterStar:${depositories}" th:value="${depository?.getId()}" th:text="${depository?.getDname()}" >外芯仓库</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">材料名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="mname" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary" lay-submit
+                                    lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+    </div>
+</div>
+<script src="/static/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+<script>
+    var data;
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+
+        table.render({
+            elem: "#currentTableId",
+            url: '/material',
+            parseData: function (res) { //res 即为原始返回的数据
+                return {
+                    "status": res.status, //解析接口状态
+                    "message": res.statusInfo.message, //解析提示文本
+                    "count": res.count, //解析数据长度
+                    "data": res.data //解析数据列表
+                };
+            },
+            request: {
+                pageName: 'page', //页码的参数名称，默认：page
+                limitName: 'size' //每页数据量的参数名，默认：limit
+            },
+            response: {
+                statusName: 'status' //规定数据状态的字段名称，默认：code
+                ,statusCode: 200 //规定成功的状态码，默认：0
+                ,msgName: 'message' //规定状态信息的字段名称，默认：msg
+                ,countName: 'count' //规定数据总数的字段名称，默认：count
+                ,dataName: 'data' //规定数据列表的字段名称，默认：data
+            },
+            toolbar: ['filter', 'exports', 'print'],
+            cols: [ [
+                {field: 'id', width: '16%', title: '材料编号'},
+                {field: 'mname', width: '16%', title: '材料名称'},
+                {field: 'typeName', width: '16%', title: '材料类型'},
+                {field: 'depositoryName', width: '16%', title: '仓库名称', sort: true},
+                {field: 'quantity', width: '16%', title: '数量', sort: true},
+                {field: 'price', title: '金额', width: '20%', sort: true},
+            ]],
+            limits: [10, 15, 20, 25, 50],
+            limit: 10,
+            page: true,
+            skin: 'line'
+        });
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            var req={};
+            data=data.field;
+            if (data.mname!==''){
+                req.mname=data.mname;
+            }
+            if (data.depositoryId!==''){
+                req.depositoryId=data.depositoryId;
+            }
+
+            //执行搜索重载
+            table.reload('currentTableId', {
+                url: '/material',
+                page: {
+                    curr: 1
+                }
+                , where: req
+            }, 'data');
+            return false;
+        });
+    });
+</script>
+
+</body>
+</html>

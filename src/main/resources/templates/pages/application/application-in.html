@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>分步表单</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/lib/layui-v2.6.3/css/layui.css" media="all">
+    <link rel="stylesheet" href="/static/css/public.css" media="all">
+    <link rel="stylesheet" href="/static/js/lay-module/step-lay/step.css" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-fluid">
+            <div class="layui-card">
+                <div class="layui-card-body" style="padding-top: 40px;">
+                    <div class="layui-carousel" id="stepForm" lay-filter="stepForm" style="margin: 0 auto;">
+                        <div carousel-item>
+                            <div>
+                                <form class="layui-form" style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">材料名称:</label>
+                                        <div class="layui-input-block">
+                                            <input name="mname" type="text" placeholder="请填写材料名称" class="layui-input" lay-verify="required"  />
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">材料数量:</label>
+                                        <div class="layui-input-block">
+                                            <input name="quantity" type="number" placeholder="请填写入材料数量" value="" class="layui-input" lay-verify="number" required>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">入库金额:</label>
+                                        <div class="layui-input-block">
+                                            <input name="price" type="number" placeholder="请填写入库金额" value="" class="layui-input" lay-verify="number" required>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">仓库：</label>
+                                        <div class="layui-input-block">
+                                            <select name="depositoryId" lay-verify="required">
+                                                <option th:each="depository,iterStar:${depositories}" th:value="${depository?.getId()}" th:text="${depository?.getDname()}" selected>外芯仓库</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">审核人:</label>
+                                        <div class="layui-input-block">
+                                            <select name="reviewerId" lay-verify="required">
+                                                <option th:each="reviewer,iterStat:${reviewers}" th:value="${reviewer?.getId()}" th:text="${reviewer?.getUname()}" selected>张三</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">备注说明:</label>
+                                        <div class="layui-input-block">
+                                            <textarea name="applyRemark" placeholder="请填写相关原因及申请原因" value="" class="layui-textarea"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block">
+                                            <button class="layui-btn" lay-submit lay-filter="formStep">
+                                                &emsp;提交申请&emsp;
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div>
+                                <form class="layui-form" style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
+                                    <div style="text-align: center;margin-top: 90px;">
+                                        <i class="layui-icon layui-circle"
+                                           style="color: white;font-size:30px;font-weight:bold;background: #52C41A;padding: 20px;line-height: 80px;">&#xe605;</i>
+                                        <div style="font-size: 24px;color: #333;font-weight: 500;margin-top: 30px;">
+                                            提交申请成功
+                                        </div>
+                                        <div style="font-size: 14px;color: #666;margin-top: 20px;">预计审核时间为1天</div>
+                                    </div>
+                                    <div style="text-align: center;margin-top: 50px;">
+                                        <button  class="layui-btn next">再申请一次</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div style="color: #666;margin-top: 30px;margin-bottom: 40px;padding-left: 30px;">
+                    <h3>说明</h3><br>
+                    申请提交后，24小时内审核完毕
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="/static/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+<script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script>
+    layui.use([ 'form', 'step'], function () {
+        var $ = layui.$,
+            form = layui.form,
+            step = layui.step;
+
+        step.render({
+            elem: '#stepForm',
+            filter: 'stepForm',
+            width: '100%', //设置容器宽度
+            stepWidth: '750px',
+            height: '600px',
+            stepItems: [{
+                title: '填写申请信息'
+            }, {
+                title: '审核中'
+            }, {
+                title: '等待入库'
+            }]
+        });
+
+
+        form.on('submit(formStep)', function (data) {
+            data=data.field;
+            data.type=1;
+            $.ajax({
+                url:"/depositoryRecord",
+                type:'post',
+                dataType:'json',
+                contentType: "application/json;charset=utf-8",
+                data:JSON.stringify(data),
+                beforeSend:function () {
+                    this.layerIndex = layer.load(0, { shade: [0.5, '#393D49'] });
+                },
+                success:function(data){
+                    layer.close(this.layerIndex);
+                    if(data.status >= 300){
+                        layer.msg(data.statusInfo.message);//失败的表情
+                        return;
+                    }else{
+                        layer.msg("申请提交成功", {
+                            icon: 6,//成功的表情
+                            time: 500 //1秒关闭（如果不配置，默认是3秒）
+                        }, function(){
+                            step.next('#stepForm');
+                        });
+                    }
+                },
+                complete: function () {
+                    layer.close(this.layerIndex);
+                }
+            })
+            return false;
+        });
+
+        form.on('submit(formStep2)', function (data) {
+            step.next('#stepForm');
+            return false;
+        });
+
+
+        $('.pre').click(function () {
+            step.pre('#stepForm');
+        });
+
+        $('.next').click(function () {
+            step.next('#stepForm');
+        });
+
+    })
+</script>
+</body>
+</html>

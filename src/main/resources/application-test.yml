@@ -1,0 +1,71 @@
+#开启健康检查、审计、统计和监控，即可通过访问/actuator/beans等查看状态
+management:
+  endpoints:
+        web:
+          exposure:
+            include: beans,health
+spring:
+  mail:
+    #邮箱配置
+    #平台地址，这里用的是qq邮箱，使用其他邮箱请更换
+    host: smtp.qq.com
+    #这里是你要发送邮箱的账户
+    username: ######@qq.com
+    #发送短信后它给你的授权码
+    password: ######
+    properties:
+      mail:
+        smtp:
+          ssl:
+            enable: true
+    ##编码格式
+    default-encoding: utf-8
+  datasource:
+    username: root
+    password: ######
+    url: jdbc:mysql://localhost:3306/depository?serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=convertToNull
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    initialSize: 5
+    minIdle: 5
+    maxActive: 10
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    useGlobalDataSourceStat: true
+    server:
+    port: 9090
+    testWhileIdle: true
+    testOnReturn: false
+    testOnBorrow: false
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 20
+    #配置监控统计拦截的filters，去掉后监控界面sql将无法统计,'wall'用于防火墙
+    filters: stat, wall, log4j
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+    #超时回收机制
+    removeAbandoned: true
+    removeAbandonedTimeout: 1800
+    logAbandoned: true
+  banner:
+    location: banner.txt
+  thymeleaf:
+    cache: false
+    mode: HTML
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+    view:
+      prefix: /templates/
+      suffix: .html
+    static-path-pattern: /static/**
+#  resources:
+#    static-locations: classpath:/static/
+server:
+mybatis:
+  type-aliases-package: com.dreamchaser.depository_manage.entity
+  configuration:
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+    log-prefix: mapper.

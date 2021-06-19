@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>分步表单</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/lib/layui-v2.6.3/css/layui.css" media="all">
+    <link rel="stylesheet" href="/static/css/public.css" media="all">
+    <link rel="stylesheet" href="/static/js/lay-module/step-lay/step.css" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-fluid">
+            <div class="layui-card">
+                <div class="layui-card-body" style="padding-top: 40px;">
+                    <div class="layui-carousel" id="stepForm" lay-filter="stepForm" style="margin-top: 5em;">
+                        <div carousel-item>
+                            <div>
+                                <form class="layui-form" style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
+                                    <div class="layui-form-item">
+                                        <h2>验证码将发送至<span id="oldEmail" th:text="${email}">767564319@qq.com</span></h2>
+                                        <h3 style="color: grey;margin-top: 1em">如果长时间未收到验证码，请检查垃圾箱</h3>
+                                    </div>
+                                    <div class="layui-form-item" style="margin-top: 5em">
+                                        <label class="layui-form-label required" style="display: inline">邮箱验证码:</label>
+                                        <input type="text" id="oldCode" class="layui-input" name="oldCode"
+                                               placeholder="请输入验证码"
+                                               lay-verify="required"
+                                               maxlength="4" style="width:160px;display: inline">
+                                        <button id="sendCodeBtn1" class="layui-btn layui-btn-normal layui-btn-sm"
+                                                style="display: inline;margin-left: 10px">发送验证码
+                                        </button>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block">
+                                            <button class="layui-btn" lay-submit lay-filter="formStep1">
+                                                &emsp;下一步&emsp;
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div>
+                                <form class="layui-form" style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label required">邮箱</label>
+                                        <div class="layui-input-block">
+                                            <input type="newEmail" name="email" lay-verify="email" placeholder="请输入邮箱"
+                                                   value=""
+                                                   class="layui-input">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item" style="margin-top: 5em">
+                                        <label class="layui-form-label required" style="display: inline">邮箱验证码:</label>
+                                        <input type="text" id="newCode" class="layui-input" name="newCode"
+                                               placeholder="请输入验证码"
+                                               lay-verify="required"
+                                               maxlength="4" style="width:160px;display: inline">
+                                        <button id="sendCodeBtn2" class="layui-btn layui-btn-normal layui-btn-sm"
+                                                lay-submit style="display: inline;margin-left: 10px">发送验证码
+                                        </button>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block">
+                                            <button class="layui-btn" lay-submit lay-filter="formStep2">
+                                                &emsp;下一步&emsp;
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                                <div>
+                                    <div style="text-align: center;margin-top: 90px;">
+                                        <i class="layui-icon layui-circle"
+                                           style="color: white;font-size:30px;font-weight:bold;background: #52C41A;padding: 20px;line-height: 80px;">&#xe605;</i>
+                                        <div style="font-size: 24px;color: #333;font-weight: 500;margin-top: 30px;">
+                                            邮箱修改成功
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div style="color: #666;margin-top: 30px;margin-bottom: 40px;padding-left: 30px;">
+                        <h3>说明</h3><br>
+                        验证码五分钟后会失效，请及时输入。
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="/static/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+<script src="/static/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'layer', 'step'], function () {
+        var $ = layui.$,
+            form = layui.form,
+            layer = layui.layer,
+            step = layui.step;
+
+
+        step.render({
+            elem: '#stepForm',
+            filter: 'stepForm',
+            width: '100%', //设置容器宽度
+            stepWidth: '750px',
+            height: '600px',
+            stepItems: [{
+                title: '验证旧邮箱'
+            }, {
+                title: '验证新邮箱'
+            }, {
+                title: '修改成功'
+            }]
+        });
+
+
+        $('#sendCodeBtn1').click(function () {
+            let email = $('#oldEmail').text();
+            console.log(email);
+            $.ajax({
+                url: "/sendCode",
+                data:'{"email":'+JSON.stringify(email)+'}',
+                type: "post",
+                dataType: 'JSON',
+                contentType: "application/json;charset=utf-8",
+                success: function (data) {
+                    if (data.status !== 200) {
+                        layer.msg(data.statusInfo.message);//失败的表情
+                        return;
+                    } else {
+                        layer.msg("验证码发送成功，请前往邮箱查看", {
+                            icon: 6,//成功的表情
+                            time: 1000 //1秒关闭（如果不配置，默认是3秒）
+                        }, function () {
+
+                        });
+                    }
+                }
+            });
+            // $.ajax({
+            //     url: '/sendCode',
+            //     type: 'POST',
+            //     dataType:'json',
+            //     contentType: "application/json;charset=utf-8",
+            //     data: '{"email":'+JSON.stringify(email)+'}',
+            //     beforeSend: function () {
+            //         this.layerIndex = layer.load(0, {shade: [0.5, '#393D49']});
+            //     },
+            //     success: function (res) {
+            //         if (res.status >= 300) {
+            //             layer.msg(data.statusInfo.message);//失败的表情
+            //         } else {
+            //             layer.msg("验证码发送成功，请前往邮箱查看", {
+            //                 icon: 6,//成功的表情
+            //                 time: 1000 //1秒关闭（如果不配置，默认是3秒）
+            //             });
+            //         }
+            //     }
+            // });
+        })
+        form.on('submit(formStep1)', function (data) {
+            data = data.field;
+            console.log(JSON.stringify(data));
+            $.ajax({
+                type: 'put',
+                dataType: 'json',
+                contentType: "application/json;charset=utf-8",
+                url: '/checkOldEmail',
+                data: JSON.stringify(data),
+                beforeSend: function () {
+                    this.layerIndex = layer.load(0, {shade: [0.5, '#393D49']});
+                },
+                success: function (res) {
+                    if (res.status >= 300) {
+                        layer.msg(data.statusInfo.message);//失败的表情
+                    } else {
+                        layer.msg("验证成功", {
+                            icon: 6,//成功的表情
+                            time: 1000 //1秒关闭（如果不配置，默认是3秒）
+                        });
+                        step.next('#stepForm');
+                    }
+                }
+            });
+            return false;
+        });
+
+        $('#sendCodeBtn2').click(function () {
+            let data = {};
+            data.email = $('#oldEmail').text();
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                contentType: "application/json;charset=utf-8",
+                url: '/sendCode',
+                data: JSON.stringify(data),
+                beforeSend: function () {
+                    this.layerIndex = layer.load(0, {shade: [0.5, '#393D49']});
+                },
+                success: function (res) {
+                    if (res.status >= 300) {
+                        layer.msg(data.statusInfo.message);//失败的表情
+                    } else {
+                        layer.msg("验证码发送成功，请前往邮箱查看", {
+                            icon: 6,//成功的表情
+                            time: 1000 //1秒关闭（如果不配置，默认是3秒）
+                        });
+                    }
+                }
+            });
+        })
+
+        form.on('submit(formStep2)', function (data) {
+            data = data.field;
+            data.oldCode = $("#oldCode");
+            $.ajax({
+                type: 'put',
+                dataType: 'json',
+                contentType: "application/json;charset=utf-8",
+                url: '/updateEmail',
+                data: JSON.stringify(data),
+                beforeSend: function () {
+                    this.layerIndex = layer.load(0, {shade: [0.5, '#393D49']});
+                },
+                success: function (res) {
+                    if (res.status >= 300) {
+                        layer.msg(data.statusInfo.message);//失败的表情
+                    } else {
+                        layer.msg("验证成功", {
+                            icon: 6,//成功的表情
+                            time: 1000 //1秒关闭（如果不配置，默认是3秒）
+                        });
+                        step.next('#stepForm');
+                    }
+                }
+            });
+            return false;
+        });
+    })
+</script>
+</body>
+</html>

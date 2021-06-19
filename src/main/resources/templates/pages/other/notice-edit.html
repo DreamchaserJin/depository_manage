@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/static/lib/layui-v2.6.3/css/layui.css" media="all">
+    <link rel="stylesheet" href="/static/css/public.css" media="all">
+
+</head>
+<body>
+<div class="layui-container">
+    <div class="layui-main layui-card" style="width: 100%;border-radius: 10px;height: 50%">
+        <fieldset class="layui-elem-field">
+            <legend style="font-size: 30px;padding-top: 20px;text-align: center">公告发布</legend>
+            <div class="layui-field-box">
+                <div class="layui-form layuimini-form" style="margin: 20px;margin-top: 30px">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">公告标题:</label>
+                        <div class="layui-input-block">
+                            <input name="title" type="text" placeholder="请输入公告标题..." class="layui-input" lay-verify="required"  />
+                        </div>
+                    </div>
+                    <div class="layui-form-item" >
+                        <label class="layui-form-label">公告内容:</label>
+                        <div class="layui-input-block" >
+                            <textarea name="content" style="height: 30em" placeholder="请填写公告内容..."  class="layui-textarea" lay-verify="required"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item" style="margin-top: 20px">
+                        <div class="layui-input-block " style="text-align: center">
+                            <button class="layui-btn layui-btn-lg " style="width: 150px" lay-submit lay-filter="noticeBtn">发布公告</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+
+
+    </div>
+</div>
+
+<script src="/static/lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'layer', 'laydate'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            laydate = layui.laydate,
+            $ = layui.$;
+
+        //日期
+        laydate.render({
+            elem: '#date'
+        });
+
+        //监听提交
+        form.on('submit(noticeBtn)', function (data) {
+            $.ajax({
+                url: "/notice",
+                data: JSON.stringify(data.field),
+                type: "post",
+                dataType: 'json',
+                contentType: "application/json;charset=utf-8",
+                success: function (data) {
+                    if (data.status >= 300) {
+                        layer.msg(data.statusInfo.message);//失败的表情
+                    } else {
+                        layer.msg("公告发布成功", {
+                            icon: 6,//成功的表情
+                            time: 1000 //1秒关闭（如果不配置，默认是3秒）
+                        },function(){
+                            window.location="/notice_edit"
+                        });
+                    }
+                }
+            });
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>
