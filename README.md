@@ -28,7 +28,7 @@
 
 ## 3.技术栈选择
 前端：layui、jquery、echarts、thymeleaf模板引擎
-后端：mysql、maven、tomcat、mybatis、springMVC、spring、SpringBoot
+后端：mysql、maven、tomcat、mybatis、springMVC、spring、SpringBoot、logback
 
 注意：这里的前端页面我拿了gitee上的开源模板layui-mini，[地址](https://gitee.com/zhongshaofa/layuimini)。
 
@@ -44,7 +44,6 @@ jdk版本：8
 
 ## 5.效果图展示
 为了更直观的展示项目，这里先放几张效果图
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210617203249128.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ2MTAxODY5,size_16,color_FFFFFF,t_70)
 
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/202106172032283.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ2MTAxODY5,size_16,color_FFFFFF,t_70)
@@ -60,22 +59,88 @@ jdk版本：8
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210618154440361.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ2MTAxODY5,size_16,color_FFFFFF,t_70)
 
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210618154508537.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ2MTAxODY5,size_16,color_FFFFFF,t_70)
-
-
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210618154523115.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ2MTAxODY5,size_16,color_FFFFFF,t_70)
 
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210618154551492.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ2MTAxODY5,size_16,color_FFFFFF,t_70)
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210618154607821.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ2MTAxODY5,size_16,color_FFFFFF,t_70)
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210618154619372.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ2MTAxODY5,size_16,color_FFFFFF,t_70)
 
 # 二、设计思路
+在说明自己的设计思路之前，我们先来看看一般意义上的SSM项目的架构图
+## 1.SSM项目（单体架构）示意图
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210620143024978.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ2MTAxODY5,size_16,color_FFFFFF,t_70)
+
+
+由上图可以看到SSM项目中大致的组成。
+一般的SSM应用都会分三层——数据库层，业务层，控制层，而我们这个仓库信息管理系统也是如此。
+
+## 2.前后端交互示意图
+有人可能不太明白SSMweb应用是如何进行前后端交互的，因此我又补充了交互的部分，如下图：
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210620144121552.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ2MTAxODY5,size_16,color_FFFFFF,t_70)
+
+前后端的交互都以HTTP请求展开的。有些请求是请求页面的；有些请求是请求静态资源的，如css文件，图片等；有些请求是请求数据的，比如出入库记录。
+
+下面是三层调用的细节示意图
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210620151335184.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ2MTAxODY5,size_16,color_FFFFFF,t_70)
+
+
+上图中我们可以直观的看到SSM项目的基本运行流程。
+
+当请求到来时，先会经过**拦截器链**，拦截器利用**反射机制**实现了对请求处理和返回的处理，可以利用它来实现**鉴权服务和权限控制**。
+
+之后请求分发，对应的请求会有对应处理程序来处理，而这就是**Controller控制层**的工作，而控制层也会调用相应的业务层方法来进行操作或者返回对应的静态资源、页面等。
+
+**Service业务层**专门处理业务层面的操作，比如入库，出库，出库成功会创建相应的申请记录同时改变库存数据，至于如何改变，如何增加这是数据库层的事情，在这层只需调用对应的Dao层方法即可。而有些操作需要保证失败回滚的机制，所以可以在Service层开启**事务**功能。
+
+**Dao层**通常与数据库中的表一一对应，一般都是去实现增删改查，而**mybatis框架**将sql语句和程序分离，极大简化了我们的开发。
+
+## 3.仓库管理系统架构图
+在看完了SSM单体项目一般是如何架构之后，再来看看我们的系统架构图（由于业务比较少，所以这里可以直接把各个类写到上面）
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210620203427672.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ2MTAxODY5,size_16,color_FFFFFF,t_70)
+
+
+
+
+和上面的大差不差，只不过这里多用了点spring的aop来处理日志信息，以及利用增强Controller来处理全局异常信息，返回对应的错误响应。
+## 4.响应格式
+对于前后端分离的项目，响应格式必定是前后端交流非常重要的一环。虽说这里并不是前后端分离开发，但为了规范，还是规定了请求响应的格式。
+
+```json
+status：状态码
+statusInfo：{
+	message：字段作为接口处理失败时, 给予用户的友好的提示信息, 即所有给用户的提示信息都统一由后端来处理
+	detail：字段用来放置接口处理失败时的详细错误信息. 只是为了方便排查错误, 前端无需使用.
+}
+data：返回的数据
+count：分页请求数据时使用的参数，意为有多少数据
+```
+
+## 5.异常处理机制
+利用增强Controller的机制来处理全局的异常，然后返回给前端对应的错误响应，如：
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210620203717548.png)
+
+## 6.日志记录机制
+利用spring的aop机制，我们可以轻松的在controller接口处理请求之前打印请求的相关信息到日志文件中。
+## 7.鉴权服务设计与实现
+关于此系统的鉴权服务，也就是我们常说的注册登录，我用的是自己实现的一套简单的token机制，示意图如下：
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210620204035574.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ2MTAxODY5,size_16,color_FFFFFF,t_70)
+
+简而言之，用户登录后会进行校验密码（为了安全期间，数据库中的密码是经过**加密存储**的，所以比对时我们也会对密码加密再进行比对），校验通过会给前端一个**token令牌的凭证**（实际上是根据登录用户名，如邮箱，**以当前时间作为盐**进行**MD5加密**后返回的一串字符串）。
+
+该令牌会存储在系统的**认证令牌池**中，而用户得到的用户凭证会被存储在浏览器的**cookie**中。
+
+用户每次访问系统资源时，请求头里都会**携带token凭证**，而每次请求（登录请求，发送验证码等特殊请求除外）都会被**userIntercepter拦截器**拦截，该拦截器会取出请求中的token凭证，然后去和认证令牌池中**校验**。如果有且未过期，则放行，同时将该认证令牌放入到请求的Atribute中以便后面的程序处理；否则**重定向回登录页面**让用户进行登录操作。
+
+关于这个鉴权服务，我写过另一篇博文——[手把手教你用Java实现一套简单的鉴权服务（SpringBoot，SSM）（万字长文）](https://blog.csdn.net/qq_46101869/article/details/116424137)，有兴趣可以去看看。
+
+## 8.业务功能简述
+
 该系统主要的就是模拟仓库出入库的流程，所以我把用户的角色氛围普通用户、审核员、仓管员和系统管理员。
 
 普通用户可以填写出入库申请进行制单，然后相应的审核人进行审核，审核员可以指定该仓库的仓管员进行验收，或者审核不通过；当审核成功，货物成功到达仓库时，仓库员进行验收操作，如果验收通过，则成功入库或者出库，相应的库存信息也发生变化。
+
 系统管理员可以管理网站用户，同时发布网站公告。（这个角色权限管理的部分我还没完成，目前所有用户都可以操作所有功能）
 
 除此之外，我还对与一些出入库申请、库存、仓库等信息进行查询和可视化的操作，让仓库管理员可以更直观的看到仓库信息的变化。
@@ -302,7 +367,7 @@ jdk版本：8
 
 而输入信息和验证码后系统会进行校验，如果成功就对密码进行MD5加密，然后存入用户信息表中。
 
-而对于用户登录，我采用的是token机制，详情请看我另一篇博文[手把手教你用Java实现一套简单的鉴权服务（SpringBoot，SSM）（万字长文）](https://blog.csdn.net/qq_46101869/article/details/116424137)
+而对于用户登录，我采用的是token机制。
 
 ## 2.仓库管理
 ### ①出入库申请流程
@@ -447,6 +512,7 @@ jdk版本：8
 
 
 # 五、代码结构
+## 1.包结构
 这里为了让更多人看懂代码，这里我讲讲我的代码结构和对应包的意义。
 首先是典型的maven结构，main里面是源代码，。
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210619160606940.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ2MTAxODY5,size_16,color_FFFFFF,t_70)
@@ -463,6 +529,8 @@ exceptionHandler：异常处理类。这里我用于捕获抛出的异常，同�
 intercepter：拦截器类。利用spring的拦截器，用于做用户鉴权与权限控制。
 security：安全控制，这个包下我实现token机制，详情看我另一篇博文[手把手教你用Java实现一套简单的鉴权服务（SpringBoot，SSM）（万字长文）](https://blog.csdn.net/qq_46101869/article/details/116424137)
 utils：工具类，封装了一些常用操作
+
+
 
 # 六、做项目时遇到的问题
 
@@ -504,4 +572,4 @@ utils：工具类，封装了一些常用操作
 
 
 **愿我们以梦为马，不负青春韶华！
-与君共勉！**
+与君共勉！**** 
