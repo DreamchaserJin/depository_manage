@@ -1,4 +1,7 @@
 
+
+@[TOC](文章目录)
+
 # 前言
 此项目为仓库管理系统，是我大二下的实训课作业，虽然是从学期初开始写的，但是实际写项目的日子也就十多天（前面都没怎么动，果然只有临近ddl效率才高）。
 
@@ -103,7 +106,7 @@ jdk版本：8
 
 
 
-和上面的大差不差，只不过这里多用了点spring的aop来处理日志信息，以及利用增强Controller来处理全局异常信息，返回对应的错误响应。
+和上面的大差不差，只不过这里利用拦截器实现了**token机制**来进行**三级权限控制**，同时多用了点spring的**aop**来处理**日志信息**，以及利用**增强Controller**来**处理全局异常信息**，返回对应的错误响应。
 ## 4.响应格式
 对于前后端分离的项目，响应格式必定是前后端交流非常重要的一环。虽说这里并不是前后端分离开发，但为了规范，还是规定了请求响应的格式。
 
@@ -136,6 +139,8 @@ count：分页请求数据时使用的参数，意为有多少数据
 关于这个鉴权服务，我写过另一篇博文——[手把手教你用Java实现一套简单的鉴权服务（SpringBoot，SSM）（万字长文）](https://blog.csdn.net/qq_46101869/article/details/116424137)，有兴趣可以去看看。
 
 ## 8.业务功能简述
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210621161512634.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ2MTAxODY5,size_16,color_FFFFFF,t_70)
+
 
 该系统主要的就是模拟仓库出入库的流程，所以我把用户的角色氛围普通用户、审核员、仓管员和系统管理员。
 
@@ -513,8 +518,8 @@ count：分页请求数据时使用的参数，意为有多少数据
 
 # 五、代码结构
 ## 1.包结构
-这里为了让更多人看懂代码，这里我讲讲我的代码结构和对应包的意义。
-首先是典型的maven结构，main里面是源代码，。
+这里为了让更多人看懂代码，我讲讲我的代码结构和对应包的意义。
+首先是典型的maven结构，main里面是源代码。
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210619160606940.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ2MTAxODY5,size_16,color_FFFFFF,t_70)
 entity：数据库实体类，与数据库字段一一对应
 pojo：封装实体类，用于封装数据库实体类给前端需要的数据
@@ -527,7 +532,7 @@ config：配置包，放配置类。这里我放了springMVC的配置类
 exception：异常类。这里我定义了自己的异常类MyException
 exceptionHandler：异常处理类。这里我用于捕获抛出的异常，同时返回给前端对应的错误信息
 intercepter：拦截器类。利用spring的拦截器，用于做用户鉴权与权限控制。
-security：安全控制，这个包下我实现token机制，详情看我另一篇博文[手把手教你用Java实现一套简单的鉴权服务（SpringBoot，SSM）（万字长文）](https://blog.csdn.net/qq_46101869/article/details/116424137)
+security：安全控制，这个包下我自己实现了一套token机制，详情看我另一篇博文[手把手教你用Java实现一套简单的鉴权服务（SpringBoot，SSM）（万字长文）](https://blog.csdn.net/qq_46101869/article/details/116424137)
 utils：工具类，封装了一些常用操作
 
 
@@ -535,8 +540,7 @@ utils：工具类，封装了一些常用操作
 # 六、做项目时遇到的问题
 
 ## 1.静态资源被拦截
-在测试项目过程中在这里插入图片描述
-，我发现返回的页面都未加载出css下的public.css文件，一开始以为是maven配置的原因导致没把对应的静态文件输出target目录中，但是看了后发现静态文件已经加载进target目录中。
+在测试项目过程中，我发现返回的页面都未加载出css下的public.css文件，一开始以为是maven配置的原因导致没把对应的静态文件输出target目录中，但是看了后发现静态文件已经加载进target目录中。
 于是查看对应报错信息是404未找到，
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210619152848784.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQ2MTAxODY5,size_16,color_FFFFFF,t_70)
 可对应目录下有相应文件，于是我怀疑是被框架拦截了。
@@ -572,4 +576,4 @@ utils：工具类，封装了一些常用操作
 
 
 **愿我们以梦为马，不负青春韶华！
-与君共勉！**** 
+与君共勉！**
